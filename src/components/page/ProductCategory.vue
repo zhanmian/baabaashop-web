@@ -85,6 +85,7 @@
                 cur_page: 1,
                 total_record: 1,
                 page_size: 5,
+                categoryId: 0,
                 multipleSelection: [],
                 // select_cate: '',
                 // select_word: '',
@@ -93,13 +94,12 @@
                 editVisible: false,
                 delVisible: false,
                 form: {
-                    categoryName: '',
-                    categoryLevel: '',
-                    createTime: '',
-                    categoryId: ''
+                  id: '',
+                  categoryName: '',
+                  categoryLevel: '',
+                  createTime: ''
                 },
-                idx: -1,
-                categoryId: 0
+                idx: -1
             }
         },
         created() {
@@ -157,7 +157,7 @@
                 this.$router.push({
                 path: '/product_category',
                 query: {
-                  categoryId: row.categoryId
+                  categoryId: row.id
                 }
               })
             },
