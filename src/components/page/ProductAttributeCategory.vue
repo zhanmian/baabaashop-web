@@ -15,6 +15,7 @@
                 <!--</el-select>-->
                 <!--<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-->
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
+              <el-button style="float: right" type="primary" icon="add" @click="addProductAttrCate">添加</el-button>
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
@@ -36,7 +37,7 @@
               </el-table-column>
               <el-table-column label="操作" width="auto" align="center">
                   <template slot-scope="scope">
-                      <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                      <el-button type="text" icon="el-icon-edit" @click="handleUpdate(scope.$index, scope.row)">编辑</el-button>
                       <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                   </template>
               </el-table-column>
@@ -48,6 +49,20 @@
                                :page-size="page_size">
                 </el-pagination>
             </div>
+          <el-dialog
+            :title="dialogTitle"
+            :visible.sync="dialogVisible"
+            width="30%">
+            <el-form ref="productAttrCatForm" :model="productAttributeCategory" :rules="rules" label-width="120px">
+              <el-form-item label="分类名称" prop="categoryName">
+                <el-input v-model="productAttributeCategory.categoryName" auto-complete="off"></el-input>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="dialogVisible = false">取 消</el-button>
+              <el-button type="primary" @click="handleConfirm('productAttrCatForm')">确 定</el-button>
+           </span>
+          </el-dialog>
         </div>
 
         <!-- 编辑弹出框 -->
@@ -72,7 +87,7 @@
 
         <!-- 删除提示框 -->
         <el-dialog title="提示" :visible.sync="delVisible" width="400" center>
-            <div class="del-dialog-cnt">删除该商品属性分类将一并删除该分类下的所有商品属性，一旦删除，不可恢复。</div>
+            <div class="del-dialog-cnt">删除该商品属性分类将一并删除该分类下的所有商品属性，一旦删除，不可恢复</div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="delVisible = false">取 消</el-button>
                 <el-button type="primary" @click="deleteRow">确 定</el-button>
@@ -93,18 +108,27 @@
                 total_record: 1,
                 page_size: 5,
                 multipleSelection: [],
-                // select_cate: '',
-                // select_word: '',
                 del_list: [],
                 is_search: false,
                 editVisible: false,
                 delVisible: false,
+                dialogTitle: '添加商品属性分类',
+                dialogVisible: false,
+                productAttributeCategory: {
+                  categoryName: '',
+                  id: null
+                },
                 form: {
                     id: '',
                     categoryName: '',
                     attributeCount: '',
                     paramCount: '',
                     createTime: ''
+                },
+                rules: {
+                  categoryName: [
+                    { required: true, message: '请输入类型名称', trigger: 'blur' }
+                  ]
                 },
                 idx: -1
             }
@@ -120,12 +144,12 @@
             }
         },
         methods: {
-            // 分页导航
+            //分页导航
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getData();
             },
-          //获取列表数据
+            //获取列表数据
             getData() {
                 this.$axios.post(this.url, {
                     page: this.cur_page,
@@ -156,15 +180,15 @@
                 }
               })
             },
-            handleEdit(index, row) {
-                this.idx = index;
-                const item = this.tableData[index];
-                // this.form = {
-                //     name: item.name,
-                //     date: item.date,
-                //     address: item.address
-                // }
-                this.editVisible = true;
+            addProductAttrCate() {
+              this.dialogVisible = true;
+              this.dialogTitle = "添加商品属性分类";
+            },
+            handleUpdate(index, row) {
+              this.dialogVisible = true;
+              this.dialogTitle = "编辑类型";
+              this.productAttributeCategory.categoryName = row.categoryName;
+              this.productAttributeCategory.id = row.id;
             },
             handleDelete(index, row) {
                 this.categoryId = this.tableData[index].id;
@@ -190,9 +214,50 @@
                 categoryId: this.categoryId
               }).then((response) => {
                 this.delVisible = false;
-                alert(response.data.message);
-                window.location.reload();
+                this.$confirm(response.data.message, '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'success'
+                }).then(() => {
+                this.getData();
+                })
               })
+            },
+            handleConfirm(formName){
+              this.$refs[formName].validate((valid) => {
+                if (valid) {
+                  let data = {};
+                  data.categoryName=this.productAttributeCategory.categoryName;
+                  if(this.dialogTitle==="添加商品属性分类"){
+                    console.log(data);
+                    this.$axios.post('/add_product_attribute_category', data).then(response=>{
+                      this.$message({
+                        message: response.data.message,
+                        type: 'success',
+                        duration:1000
+                      });
+                      this.dialogVisible = false;
+                      this.getData();
+                    });
+                  }
+                  else{
+                    data.id=this.productAttributeCategory.id;
+                    console.log(data);
+                    this.$axios.post('/update_product_attribute_category', data).then(response=>{
+                      this.$message({
+                        message: response.data.message,
+                        type: 'success',
+                        duration:1000
+                      });
+                      this.dialogVisible = false;
+                      this.getData();
+                    });
+                  }
+                } else {
+                  console.log('error submit!!');
+                  return false;
+                }
+              });
             }
         }
     }

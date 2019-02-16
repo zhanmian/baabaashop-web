@@ -16,6 +16,7 @@
                 <!--</el-select>-->
                 <!--<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-->
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-button style="float: right" type="primary" icon="add" @click="addProductAttribute">添加</el-button>
             </div>
             <el-table :data="data" border class="table" ref="multipleTable"
                       @selection-change="handleSelectionChange">
@@ -144,14 +145,7 @@
                 this.is_search = true;
             },
             handleEdit(index, row) {
-                this.idx = index;
-                const item = this.tableData[index];
-                // this.form = {
-                //     name: item.name,
-                //     date: item.date,
-                //     address: item.address
-                // }
-                this.editVisible = true;
+              this.$router.push({path:'/update_product_attribute',query:{id:row.id}});
             },
             handleDelete(index, row) {
                 this.attributeId = this.tableData[index].id;
@@ -174,12 +168,28 @@
             // 确定删除
             deleteRow(){
               this.$axios.post('/delete_product_attribute', {
-                id: this.attributeId
+                id: this.attributeId,
+                categoryId: this.categoryId,
+                type: this.type
               }).then((response) => {
                 this.delVisible = false;
-                alert(response.data.message);
-                window.location.reload();
+                this.$confirm(response.data.message, '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'success'
+                }).then(() => {
+                  this.getData();
+                })
               })
+            },
+            addProductAttribute(){
+              this.$router.push({
+                path:'/add_product_attribute',
+                query:{
+                  categoryId:this.$route.query.categoryId,
+                  type:this.$route.query.type
+                }
+              });
             }
         }
     }

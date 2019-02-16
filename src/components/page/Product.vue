@@ -15,6 +15,7 @@
                 <!--</el-select>-->
                 <!--<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-->
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-button style="float: right" type="primary" icon="add" @click="addProduct">添加</el-button>
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
@@ -133,18 +134,17 @@
                   this.total_record = response.data.totalPage;
                 })
             },
+            addProduct(){
+              this.$router.push({path: '/add_product'})
+            },
             search() {
                 this.is_search = true;
             },
             handleEdit(index, row) {
-                this.idx = index;
-                const item = this.tableData[index];
-                // this.form = {
-                //     name: item.name,
-                //     date: item.date,
-                //     address: item.address
-                // }
-                this.editVisible = true;
+                this.$route.push({
+                  path: '/update_product',
+                  query: {id: row.id}
+                })
             },
             handleDelete(index, row) {
                 this.productId = this.tableData[index].id;

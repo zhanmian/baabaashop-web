@@ -14,7 +14,8 @@
                     <!--<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
                 <!--</el-select>-->
                 <!--<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-->
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <!--<el-button type="primary" icon="search" @click="search">搜索</el-button>-->
+                <el-button style="float: right" type="primary" icon="add" @click="addProductCategory">添加</el-button>
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
@@ -43,26 +44,6 @@
             </div>
         </div>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
-        </el-dialog>
-
         <!-- 删除提示框 -->
         <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
             <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
@@ -80,21 +61,18 @@
         name: 'basetable',
         data() {
             return {
-                url: 'product_category',
                 tableData: [],
                 cur_page: 1,
-                total_record: 1,
                 page_size: 5,
+                total_record: 1,
                 categoryId: 0,
                 multipleSelection: [],
-                // select_cate: '',
-                // select_word: '',
-                del_list: [],
                 is_search: false,
-                editVisible: false,
+                is_subcategory: false,
                 delVisible: false,
                 form: {
                   id: '',
+                  parentId: '',
                   categoryName: '',
                   categoryLevel: '',
                   createTime: ''
@@ -103,13 +81,13 @@
             }
         },
         created() {
-            this.resetParentId();
+            // this.resetParentId();
             this.getData();
         },
         //对表格进行二次渲染
         watch: {
           $route(route) {
-            this.resetParentId();
+            // this.resetParentId();
             this.getData();
           }
         },
@@ -133,7 +111,15 @@
             },
             // 获取列表数据
             getData() {
-                this.$axios.post(this.url, {
+                this.is_subcategory=this.$route.query.is_subcategory;
+                if(this.is_subcategory){
+                  this.cur_page=1;
+                  this.page_size=100;
+                  this.categoryId=this.$route.query.parentId;
+                }else{
+                  this.categoryId=0;
+                }
+                this.$axios.post('product_category', {
                     page: this.cur_page,
                     pageSize: this.page_size,
                     categoryId: this.categoryId
@@ -141,32 +127,41 @@
                     this.tableData = res.data.list;
                     this.total_record = res.data.totalRecord;
                 })
+
             },
             //设置子类的父ID
             resetParentId(){
-              if(this.$route.query.categoryId != null){
-                this.categoryId=this.$route.query.categoryId;
+              if(this.is_subcategory){
+                this.form.parentId=this.$route.query.parentId;
               }else{
-                this.categoryId=0;
+                this.form.parentId=0;
               }
             },
-            search() {
-                this.is_search = true;
-            },
+          //跳转到次级分类
             subcategory(index, row) {
                 this.$router.push({
                 path: '/product_category',
                 query: {
-                  categoryId: row.id
+                  parentId: row.id,
+                  is_subcategory: true
                 }
               })
             },
+            addProductCategory(){
+              if(this.is_subcategory){
+                this.$router.push({
+                  path: '/add_product_category',
+                  query: {parentId: this.$route.query.parentId, is_subcategory: true}
+                })
+              }else{
+                this.$router.push({path: '/add_product_category'})
+              }
+            },
             handleEdit(index, row) {
-                const item = this.tableData[index];
-                this.editVisible = true;
+              this.$router.push({path: '/update_product_category', query: {id: row.id}})
             },
             handleDelete(index, row) {
-                this.categoryId = this.tableData[index].categoryId;
+                this.categoryId = row.id;
                 this.delVisible = true;
             },
             delAll() {
@@ -184,14 +179,17 @@
                 this.$message.success(`修改第 ${this.idx+1} 行成功`);
             },
             // 确定删除
-            deleteRow(){
-                this.$axios.post('/delete_product_category', {
-                  categoryId: this.categoryId
-                }).then((response) => {
-                  this.delVisible = false;
-                  alert(response.data.message);
-                  window.location.reload();
+            deleteRow() {
+              this.$axios.post('/delete_product_category/'+this.categoryId).then((response) => {
+                this.delVisible = false;
+                this.$confirm(response.data.message, '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'success'
+                }).then(() => {
+                  this.getData();
                 })
+              })
             }
         }
     }

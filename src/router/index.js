@@ -1,24 +1,3 @@
-// import Vue from 'vue'
-// import Router from 'vue-router'
-// import HelloWorld from '@/components/HelloWorld'
-// import Home from '@/components/common/Home'
-//
-// Vue.use(Router);
-//
-// export default new Router({
-//   routes: [
-//     // {
-//     //   path: '/',
-//     //   name: 'HelloWorld',
-//     //   component: HelloWorld
-//     // },
-//     {
-//       path: '/',
-//       name: "Home",
-//       component: Home
-//     },
-//   ]
-// })
 import Vue from 'vue';
 import Router from 'vue-router';
 
@@ -51,6 +30,17 @@ export default new Router({
           meta: { title: '添加商品' }
         },
         {
+          path: '/update_product',
+          component: resolve => require(['../components/page/UpdateProduct.vue'], resolve),
+          meta: { title: '更新商品' }
+        },
+        {
+          path: '/product_detail',
+          component: resolve => require(['../components/page/ProductDetail.vue'], resolve),
+          meta: { title: '商品详情组件' },
+          hidden: true
+        },
+        {
           path: '/product_list',
           component: resolve => require(['../components/page/Product.vue'], resolve),
           meta: { title: '商品列表' }
@@ -61,9 +51,41 @@ export default new Router({
           meta: { title: '商品分类' }
         },
         {
+          path: '/product_category_detail',
+          component: resolve => require(['../components/page/ProductCategoryDetail.vue'], resolve),
+          meta: { title: '商品分类详情组件' },
+          hidden: true
+        },
+        {
+          path: '/add_product_category',
+          component: resolve => require(['../components/page/AddProductCategory.vue'], resolve),
+          meta: { title: '添加商品分类' },
+        },
+        {
+          path: '/update_product_category',
+          component: resolve => require(['../components/page/UpdateProductCategory.vue'], resolve),
+          meta: { title: '更新商品分类' }
+        },
+        {
           path: '/product_attribute',
           component: resolve => require(['../components/page/ProductAttribute.vue'], resolve),
           meta: { title: '商品属性' }
+        },
+        {
+          path: '/product_attribute_detail',
+          component: resolve => require(['../components/page/ProductAttributeDetail.vue'], resolve),
+          meta: { title: '商品属性详情组件' },
+          hidden: true
+        },
+        {
+          path: '/add_product_attribute',
+          component: resolve => require(['../components/page/AddProductAttribute.vue'], resolve),
+          meta: { title: '添加商品属性' },
+        },
+        {
+          path: '/update_product_attribute',
+          component: resolve => require(['../components/page/UpdateProductAttribute.vue'], resolve),
+          meta: { title: '更新商品属性' }
         },
         {
           path: '/attribute_category',
@@ -81,12 +103,6 @@ export default new Router({
           component: resolve => require(['../components/page/VueEditor.vue'], resolve),
           meta: { title: '富文本编辑器' }
         },
-        // {
-        //   // markdown组件
-        //   path: '/markdown',
-        //   component: resolve => require(['../components/page/Markdown.vue'], resolve),
-        //   meta: { title: 'markdown编辑器' }
-        // },
         {
           // 图片上传组件
           path: '/upload',
