@@ -10,12 +10,6 @@
         <div class="container">
             <div class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <!--<el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">-->
-                    <!--<el-option key="1" label="广东省" value="广东省"></el-option>-->
-                    <!--<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
-                <!--</el-select>-->
-                <!--<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-->
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 <el-button style="float: right" type="primary" icon="add" @click="addProductAttribute">添加</el-button>
             </div>
             <el-table :data="data" border class="table" ref="multipleTable"
@@ -47,26 +41,6 @@
             </div>
         </div>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
-        </el-dialog>
-
         <!-- 删除提示框 -->
         <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
             <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
@@ -80,11 +54,8 @@
 
 <script>
 
-
-
-
   export default {
-        name: 'basetable',
+        name: 'productAttribute',
         data() {
             return {
                 url:'product_attribute',
@@ -96,11 +67,6 @@
                 attributeId: null,
                 type: this.$route.query.type,
                 multipleSelection: [],
-                // select_cate: '',
-                // select_word: '',
-                del_list: [],
-                is_search: false,
-                editVisible: false,
                 delVisible: false,
                 form: {
                     id: '',
@@ -141,9 +107,6 @@
                     this.total_record = res.data.totalRecord;
                 })
             },
-            search() {
-                this.is_search = true;
-            },
             handleEdit(index, row) {
               this.$router.push({path:'/update_product_attribute',query:{id:row.id}});
             },
@@ -152,7 +115,6 @@
                 this.delVisible = true;
             },
             delAll() {
-
                 this.$message.error('删除了' + str);
                 this.multipleSelection = [];
             },

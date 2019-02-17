@@ -26,71 +26,76 @@ export default new Router({
         },
         {
           path: '/add_product',
-          component: resolve => require(['../components/page/AddProduct.vue'], resolve),
+          component: resolve => require(['../components/product/AddProduct.vue'], resolve),
           meta: { title: '添加商品' }
         },
         {
           path: '/update_product',
-          component: resolve => require(['../components/page/UpdateProduct.vue'], resolve),
+          component: resolve => require(['../components/product/UpdateProduct.vue'], resolve),
           meta: { title: '更新商品' }
         },
         {
           path: '/product_detail',
-          component: resolve => require(['../components/page/ProductDetail.vue'], resolve),
+          component: resolve => require(['../components/product/ProductDetail.vue'], resolve),
           meta: { title: '商品详情组件' },
           hidden: true
         },
         {
           path: '/product_list',
-          component: resolve => require(['../components/page/Product.vue'], resolve),
+          component: resolve => require(['../components/product/Product.vue'], resolve),
           meta: { title: '商品列表' }
         },
         {
           path: '/product_category',
-          component: resolve => require(['../components/page/ProductCategory.vue'], resolve),
+          component: resolve => require(['../components/productCategory/ProductCategory.vue'], resolve),
           meta: { title: '商品分类' }
         },
         {
           path: '/product_category_detail',
-          component: resolve => require(['../components/page/ProductCategoryDetail.vue'], resolve),
+          component: resolve => require(['../components/productCategory/ProductCategoryDetail.vue'], resolve),
           meta: { title: '商品分类详情组件' },
           hidden: true
         },
         {
           path: '/add_product_category',
-          component: resolve => require(['../components/page/AddProductCategory.vue'], resolve),
+          component: resolve => require(['../components/productCategory/AddProductCategory.vue'], resolve),
           meta: { title: '添加商品分类' },
         },
         {
           path: '/update_product_category',
-          component: resolve => require(['../components/page/UpdateProductCategory.vue'], resolve),
+          component: resolve => require(['../components/productCategory/UpdateProductCategory.vue'], resolve),
           meta: { title: '更新商品分类' }
         },
         {
           path: '/product_attribute',
-          component: resolve => require(['../components/page/ProductAttribute.vue'], resolve),
+          component: resolve => require(['../components/productAttribute/ProductAttribute.vue'], resolve),
           meta: { title: '商品属性' }
         },
         {
           path: '/product_attribute_detail',
-          component: resolve => require(['../components/page/ProductAttributeDetail.vue'], resolve),
+          component: resolve => require(['../components/productAttribute/ProductAttributeDetail.vue'], resolve),
           meta: { title: '商品属性详情组件' },
           hidden: true
         },
         {
           path: '/add_product_attribute',
-          component: resolve => require(['../components/page/AddProductAttribute.vue'], resolve),
+          component: resolve => require(['../components/productAttribute/AddProductAttribute.vue'], resolve),
           meta: { title: '添加商品属性' },
         },
         {
           path: '/update_product_attribute',
-          component: resolve => require(['../components/page/UpdateProductAttribute.vue'], resolve),
+          component: resolve => require(['../components/productAttribute/UpdateProductAttribute.vue'], resolve),
           meta: { title: '更新商品属性' }
         },
         {
           path: '/attribute_category',
-          component: resolve => require(['../components/page/ProductAttributeCategory.vue'], resolve),
+          component: resolve => require(['../components/productAttributeCategory/ProductAttributeCategory.vue'], resolve),
           meta: { title: '商品属性分类' }
+        },
+        {
+          path: '/order',
+          component: resolve => require(['../components/order/order.vue'], resolve),
+          meta: { title: '订单列表' }
         },
         {
           path: '/tabs',
@@ -109,24 +114,6 @@ export default new Router({
           component: resolve => require(['../components/page/Upload.vue'], resolve),
           meta: { title: '文件上传' }
         },
-        {
-          // vue-schart组件
-          path: '/charts',
-          component: resolve => require(['../components/page/BaseCharts.vue'], resolve),
-          meta: { title: 'schart图表' }
-        },
-        // {
-        //   // 拖拽列表组件
-        //   path: '/drag',
-        //   component: resolve => require(['../components/page/DragList.vue'], resolve),
-        //   meta: { title: '拖拽列表' }
-        // },
-        // {
-        //   // 拖拽Dialog组件
-        //   path: '/dialog',
-        //   component: resolve => require(['../components/page/DragDialog.vue'], resolve),
-        //   meta: { title: '拖拽弹框' }
-        // },
         {
           // 权限页面
           path: '/permission',

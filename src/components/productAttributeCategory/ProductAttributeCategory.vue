@@ -9,13 +9,7 @@
         <div class="container">
             <div class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <!--<el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">-->
-                    <!--<el-option key="1" label="广东省" value="广东省"></el-option>-->
-                    <!--<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
-                <!--</el-select>-->
-                <!--<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-->
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
-              <el-button style="float: right" type="primary" icon="add" @click="addProductAttrCate">添加</el-button>
+                <el-button style="float: right" type="primary" icon="add" @click="addProductAttrCate">添加</el-button>
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
@@ -49,6 +43,8 @@
                                :page-size="page_size">
                 </el-pagination>
             </div>
+
+          <!--新建分类或编辑分类弹出框-->
           <el-dialog
             :title="dialogTitle"
             :visible.sync="dialogVisible"
@@ -65,26 +61,6 @@
           </el-dialog>
         </div>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
-        </el-dialog>
-
         <!-- 删除提示框 -->
         <el-dialog title="提示" :visible.sync="delVisible" width="400" center>
             <div class="del-dialog-cnt">删除该商品属性分类将一并删除该分类下的所有商品属性，一旦删除，不可恢复</div>
@@ -99,17 +75,15 @@
 <script>
 
   export default {
-        name: 'basetable',
+        name: 'productAttributeCategory',
         data() {
             return {
-               url: 'product_attribute_category',
                 tableData: [],
                 cur_page: 1,
                 total_record: 1,
                 page_size: 5,
                 multipleSelection: [],
                 del_list: [],
-                is_search: false,
                 editVisible: false,
                 delVisible: false,
                 dialogTitle: '添加商品属性分类',
@@ -151,7 +125,7 @@
             },
             //获取列表数据
             getData() {
-                this.$axios.post(this.url, {
+                this.$axios.post('product_attribute_category', {
                     page: this.cur_page,
                     pageSize: this.page_size
                 }).then((res) => {
@@ -159,9 +133,7 @@
                     this.total_record = res.data.totalRecord;
                 })
             },
-            search() {
-                this.is_search = true;
-            },
+            //获取规格属性
             getAttribute(index, row){
               this.$router.push({
                 path: '/product_attribute',
@@ -171,6 +143,7 @@
                 }
               })
             },
+            //获取参数属性
             getParamAttribute(index, row){
               this.$router.push({
                 path: '/product_attribute',
@@ -195,18 +168,11 @@
                 this.delVisible = true;
             },
             delAll() {
-
                 this.$message.error('删除了' + str);
                 this.multipleSelection = [];
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
-            },
-            // 保存编辑
-            saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx+1} 行成功`);
             },
             // 确定删除
             deleteRow(){
@@ -242,7 +208,6 @@
                   }
                   else{
                     data.id=this.productAttributeCategory.id;
-                    console.log(data);
                     this.$axios.post('/update_product_attribute_category', data).then(response=>{
                       this.$message({
                         message: response.data.message,

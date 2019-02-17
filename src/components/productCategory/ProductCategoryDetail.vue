@@ -44,6 +44,7 @@
     data() {
       return {
         is_subcategory: false,
+        // 面包屑标题
         breadcrumb: '',
         productCategoryList: [],
         productCategory: {

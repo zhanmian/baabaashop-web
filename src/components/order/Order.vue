@@ -2,36 +2,31 @@
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-              <el-breadcrumb-item><i class="el-icon-lx-goods"></i> 商品管理</el-breadcrumb-item>
-              <el-breadcrumb-item>商品列表</el-breadcrumb-item>
+              <el-breadcrumb-item><i class="el-icon-lx-goods"></i> 订单管理</el-breadcrumb-item>
+              <el-breadcrumb-item>订单列表</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
             <div class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <!--<el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">-->
-                    <!--<el-option key="1" label="广东省" value="广东省"></el-option>-->
-                    <!--<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
-                <!--</el-select>-->
-                <!--<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-->
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                <el-button style="float: right" type="primary" icon="add" @click="addProduct">添加</el-button>
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="productCode" label="货号"  width="auto" align="center">
+                <el-table-column prop="orderCode" label="订单编号"  width="auto" align="center">
                 </el-table-column>
-                <el-table-column prop="productName" label="品名" width="auto" align="center">
+                <el-table-column prop="username" label="用户" width="auto" align="center">
                 </el-table-column>
-              <el-table-column prop="productPrice" label="价格" width="auto" align="center">
+              <el-table-column prop="totalAmount" label="订单金额" width="90px" align="center">
               </el-table-column>
-              <el-table-column prop="categoryName" label="分类" width="auto" align="center">
+              <el-table-column prop="payType" label="支付方式" width="90px" align="center">
+              </el-table-column>
+              <el-table-column prop="status" label="订单状态" width="90px" align="center">
               </el-table-column>
               <el-table-column prop="createTime" label="创建时间" width="auto" align="center" >
               </el-table-column>
-              <el-table-column label="操作" width="auto" align="center">
+              <el-table-column label="操作" width="160px" align="center">
                   <template slot-scope="scope">
-                      <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                      <el-button type="text" icon="el-icon-lx-calendar" @click="checkOrder(scope.$index, scope.row)">查看订单</el-button>
                       <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                   </template>
               </el-table-column>
@@ -45,26 +40,6 @@
             </div>
         </div>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
-        </el-dialog>
-
         <!-- 删除提示框 -->
         <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
             <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
@@ -77,35 +52,25 @@
 </template>
 
 <script>
-  import {fetchList} from "@/api/product";
 
-  const defaultListQuery = {
-    page: 1,
-    pageSize: this.page_size
-  };
   export default {
-        name: 'basetable',
+        name: 'order',
         data() {
             return {
-                // url: 'product_list',
                 tableData: [],
                 cur_page: 1,
                 total_record: 1,
-                page_size: 5,
-                productId: null,
+                page_size: 10,
+                orderId: null,
                 multipleSelection: [],
-                // select_cate: '',
-                // select_word: '',
-                del_list: [],
-                is_search: false,
-                editVisible: false,
                 delVisible: false,
                 form: {
                     id:'',
-                    productCode: '',
-                    productName: '',
-                    productPrice: '',
-                    categoryName: '',
+                    orderCode: '',
+                    username: '',
+                    totalAmount: '',
+                    payType: '',
+                    status: '',
                     createTime: ''
                 },
                 idx: -1
@@ -117,6 +82,24 @@
         computed: {
             data() {
                 return this.tableData.filter((d) => {
+                  if (d.payType === 0) {
+                    d.payType = '未支付';
+                  } else if (d.payType === 1) {
+                    d.payType = '支付宝';
+                  }else if(d.payType === 2){
+                    d.payType = '微信支付';
+                  }
+                  if (d.status === 0) {
+                    d.status = '待付款';
+                  } else if (d.status === 1) {
+                    d.status = '待发货';
+                  } else if (d.status === 2) {
+                    d.status = '已发货';
+                  } else if (d.status === 3) {
+                    d.status = '已完成';
+                  } else if (d.status === 4) {
+                    d.status = '已关闭';
+                  }
                   return d;
                 })
             }
@@ -129,21 +112,13 @@
             },
             // 获取列表数据
             getData() {
-                fetchList(defaultListQuery).then(response=>{
+                this.$axios.post('get_order_list', {page: this.cur_page, pageSize: this.page_size}).then(response=>{
                   this.tableData = response.data.list;
-                  this.total_record = response.data.totalPage;
+                  this.total_record = response.data.totalRecord;
                 })
             },
-            addProduct(){
-              this.$router.push({path: '/add_product'})
-            },
-            search() {
-                this.is_search = true;
-            },
-            handleEdit(index, row) {
-                this.$router.push({
-                  path: '/update_product',
-                  query: {id: row.id}
+            checkOrder(index, row) {
+                this.$router.push({path: '/get_order_detail', query: {id: row.id}
                 })
             },
             handleDelete(index, row) {
@@ -151,27 +126,23 @@
                 this.delVisible = true;
             },
             delAll() {
-
                 this.$message.error('删除了' + str);
                 this.multipleSelection = [];
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
-            // 保存编辑
-            saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx+1} 行成功`);
-            },
             // 确定删除
             deleteRow(){
-                this.$axios.post('/delete_product', {
-                  id: this.productId
-                }).then((response) => {
+                this.$axios.post('/delete_order', {id: this.id}).then((response) => {
                   this.delVisible = false;
-                  alert(response.data.message);
-                  window.location.reload();
+                  this.$confirm(response.data.message, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'success'
+                  }).then(() => {
+                    this.getData();
+                  })
                 })
             }
         }

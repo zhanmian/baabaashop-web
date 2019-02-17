@@ -9,12 +9,6 @@
         <div class="container">
             <div class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <!--<el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">-->
-                    <!--<el-option key="1" label="广东省" value="广东省"></el-option>-->
-                    <!--<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
-                <!--</el-select>-->
-                <!--<el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>-->
-                <!--<el-button type="primary" icon="search" @click="search">搜索</el-button>-->
                 <el-button style="float: right" type="primary" icon="add" @click="addProductCategory">添加</el-button>
             </div>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
@@ -27,7 +21,7 @@
               </el-table-column>
               <el-table-column label="操作" width="auto" align="center">
                   <template slot-scope="scope">
-                      <el-button type="text" @click="subcategory(scope.$index, scope.row)">次级分类</el-button>
+                      <el-button type="text" :disabled="is_subcategory" @click="subcategory(scope.$index, scope.row)">次级分类</el-button>
                       <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                       <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                   </template>
@@ -81,13 +75,11 @@
             }
         },
         created() {
-            // this.resetParentId();
             this.getData();
         },
         //对表格进行二次渲染
         watch: {
           $route(route) {
-            // this.resetParentId();
             this.getData();
           }
         },
@@ -129,14 +121,6 @@
                 })
 
             },
-            //设置子类的父ID
-            resetParentId(){
-              if(this.is_subcategory){
-                this.form.parentId=this.$route.query.parentId;
-              }else{
-                this.form.parentId=0;
-              }
-            },
           //跳转到次级分类
             subcategory(index, row) {
                 this.$router.push({
@@ -171,12 +155,6 @@
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
-            },
-            // 保存编辑
-            saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx+1} 行成功`);
             },
             // 确定删除
             deleteRow() {
