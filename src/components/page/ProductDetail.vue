@@ -168,7 +168,6 @@
           VueCropper
         },
         props:{
-          value: Object,
           isEdit: {
             type: Boolean,
             default: false
@@ -193,7 +192,7 @@
                   placeholder: 'Hello World'
                 },
                 //cropper参数
-                defaultSrc: require('../../assets/img/fuji.jpg'),
+                defaultSrc: require('../../assets/img/add_image.jpg'),
                 fileList: [],
                 imgSrc: '',
                 imageName: '',
@@ -206,6 +205,8 @@
                     productPrice: '',
                     productCode: '',
                     productCategoryId: '',
+                    productCategoryName: '',
+                    productCategoryParentId: '',
                     productAttributeCategoryId: '',
                     productAttributeValueList: [],
                     picture: '',
@@ -232,23 +233,40 @@
           this.cropImg = this.defaultSrc;
 
           if(this.isEdit){
-            getProduct(this.$route.query.id).then(response=>{
-              this.productParam=response.data;
+            this.$axios.post('get_product_detail/' + this.$route.query.id).then(response=>{
+              this.form=response.data;
+              this.cropImg = 'http://localhost:8080/downloadImage?filePath='+ this.form.picture;
             });
           }
         },
-        // watch: {
-        //   productId:function (newValue) {
-        //     if(!this.isEdit)return;
-        //     if(this.hasEditCreated)return;
-        //     if(newValue===undefined||newValue==null||newValue===0)return;
-        //     this.handleEditCreated();
-        //   }
-        // },
+        computed: {
+          productId(){
+            return this.form.id;
+          }
+        },
+        watch: {
+          productId:function (newValue) {
+            if(!this.isEdit)return;
+            if(this.hasEditCreated)return;
+            if(newValue===undefined||newValue==null||newValue===0)return;
+            this.handleEditCreated();
+          },
+          selectProductCategoryValue: function (newValue) {
+            if (newValue != null && newValue.length === 2) {
+              this.form.productCategoryId = newValue[1];
+              this.form.productCategoryName= this.getCateNameById(this.form.productCategoryId);
+            } else {
+              this.form.productCategoryId = null;
+              this.form.productCategoryName=null;
+            }
+          }
+        },
         methods: {
             handleEditCreated() {
               //根据商品属性分类id获取属性和参数
               if(this.form.productAttributeCategoryId!=null){
+                this.selectProductCategoryValue.push(this.form.productCategoryParentId);
+                this.selectProductCategoryValue.push(this.form.productCategoryId);
                 this.handleProductAttributeChange(this.form.productAttributeCategoryId);
               }
               this.hasEditCreated=true;
@@ -273,6 +291,18 @@
                   this.productCategoryOptions.push({label: list[i].categoryName, value: list[i].id, children: children});
                 }
               });
+            },
+            getCateNameById(id){
+              let name=null;
+              for(let i=0;i<this.productCategoryOptions.length;i++){
+                for(let j=0;i<this.productCategoryOptions[i].children.length;j++){
+                  if(this.productCategoryOptions[i].children[j].value===id){
+                    name=this.productCategoryOptions[i].children[j].label;
+                    return name;
+                  }
+                }
+              }
+              return name;
             },
             //获取商品属性分类列表
             getProductAttributeCategoryList(){
@@ -324,8 +354,8 @@
               let options = [];
               for (let i = 0; i < this.form.productAttributeValueList.length; i++) {
                 let attrValue = this.form.productAttributeValueList[i];
-                if (attrValue.productAttributeId === id) {
-                  let strArr = attrValue.form.split(',');
+                if (attrValue.attributeId === id) {
+                  let strArr = attrValue.value.split(',');
                   for (let j = 0; j < strArr.length; j++) {
                     options.push(strArr[j]);
                   }
@@ -532,7 +562,7 @@
                 })
               }else{
                 this.$axios.post('upload_picture', this.cropImgBlob).then(response=>{
-                  this.form.picture=response.data.filePath;
+                  this.form.picture=response.data.data.filePath;
                   if(response.data.code === 1){
                     this.$message({
                       message: '上传成功',
@@ -543,18 +573,18 @@
                 })
                 }
             },
-            finishCommit(isEdit) {
+            finishCommit() {
               this.$confirm('是否要提交该产品', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
               }).then(() => {
-                if(isEdit){
+                if(this.isEdit){
                   this.$axios.post('update_product', this.form).then(response=>{
                     this.$message({
                       type: 'success',
                       message: '提交成功',
-                      duration:1000
+                      duration:3000
                     });
                     this.$router.back();
                   });
@@ -650,5 +680,8 @@
     width: 720px;
     padding: 35px 35px 15px 35px;
     margin: 20px auto;
+  }
+  .cardBg {
+    background: #F8F9FC;
   }
 </style>

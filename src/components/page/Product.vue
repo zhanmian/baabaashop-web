@@ -141,7 +141,7 @@
                 this.is_search = true;
             },
             handleEdit(index, row) {
-                this.$route.push({
+                this.$router.push({
                   path: '/update_product',
                   query: {id: row.id}
                 })
