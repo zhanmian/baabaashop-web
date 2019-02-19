@@ -94,8 +94,13 @@ export default new Router({
         },
         {
           path: '/order',
-          component: resolve => require(['../components/order/order.vue'], resolve),
+          component: resolve => require(['../components/order/Order.vue'], resolve),
           meta: { title: '订单列表' }
+        },
+        {
+          path: '/get_order_detail',
+          component: resolve => require(['../components/order/OrderDetail.vue'], resolve),
+          meta: { title: '订单详情' }
         },
         {
           path: '/tabs',

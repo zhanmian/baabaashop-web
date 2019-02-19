@@ -122,7 +122,8 @@
                 })
             },
             handleDelete(index, row) {
-                this.productId = this.tableData[index].id;
+                this.orderId = row.id;
+                console.log(this.orderId);
                 this.delVisible = true;
             },
             delAll() {
@@ -134,7 +135,7 @@
             },
             // 确定删除
             deleteRow(){
-                this.$axios.post('/delete_order', {id: this.id}).then((response) => {
+                this.$axios.post('/delete_order/' + this.orderId).then((response) => {
                   this.delVisible = false;
                   this.$confirm(response.data.message, '提示', {
                     confirmButtonText: '确定',
