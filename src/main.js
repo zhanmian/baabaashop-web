@@ -52,12 +52,9 @@ router.beforeEach((to, from, next) => {
 
 // 环境的切换
 if (process.env.NODE_ENV == 'development') {
-  axios.defaults.baseURL = 'http://127.0.0.1:8080/';}
-else if (process.env.NODE_ENV == 'debug') {
-  axios.defaults.baseURL = 'http://95.179.170.40:8080/baseline';
-}
-else if (process.env.NODE_ENV == 'production') {
-  axios.defaults.baseURL = 'http://120.79.197.119:8080/baseline';
+  axios.defaults.baseURL = 'http://127.0.0.1:8080/';
+} else if (process.env.NODE_ENV == 'production') {
+  axios.defaults.baseURL = 'http://157.230.242.250:8088/';
 
 }
 
