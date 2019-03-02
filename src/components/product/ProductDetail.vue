@@ -235,7 +235,7 @@
           if(this.isEdit){
             this.$axios.post('get_product_detail/' + this.$route.query.id).then(response=>{
               this.form=response.data;
-              this.cropImg = 'http://localhost:8080/downloadImage?filePath='+ this.form.picture;
+              this.cropImg = 'http://localhost:8088/downloadImage?filePath='+ this.form.picture;
             });
           }
         },

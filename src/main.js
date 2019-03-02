@@ -28,6 +28,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI, {
   size: 'small'
 });
+
 Vue.prototype.$axios = axios;
 
 //使用钩子函数对路由进行权限跳转
@@ -51,12 +52,11 @@ router.beforeEach((to, from, next) => {
 })
 
 // 环境的切换
-if (process.env.NODE_ENV == 'development') {
-  axios.defaults.baseURL = 'http://127.0.0.1:8080/';
-} else if (process.env.NODE_ENV == 'production') {
-  axios.defaults.baseURL = 'http://157.230.242.250:8088/';
-
-}
+// if (process.env.NODE_ENV == 'development') {
+//   axios.defaults.baseURL = 'http://127.0.0.1:8088/';
+// } else if (process.env.NODE_ENV == 'production') {
+//   axios.defaults.baseURL = 'http://157.230.242.250:8088/';
+// }
 
 new Vue({
   router,
