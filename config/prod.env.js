@@ -6,10 +6,10 @@ let params = process.argv[2];
 let baseUrl = '';
 switch (params) {
   case 'test':
-    baseUrl = '"http://localhost:8088/"';
+    baseUrl = '"http://localhost:8088"';
     break;
   case 'prod':
-    baseUrl = '"http://157.230.242.250:8088/"';
+    baseUrl = '"http://157.230.242.250:8088"';
     break
 }
 module.exports = merge(prodEnv, {
