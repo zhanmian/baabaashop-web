@@ -1,4 +1,6 @@
 'use strict'
+const merge = require('webpack-merge')
+const prodEnv = require('./prod.env')
 
 let params = process.argv[4];
 let baseUrl = '';
